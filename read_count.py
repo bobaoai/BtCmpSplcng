@@ -88,5 +88,5 @@ class gene:
 if __name__ == '__main__':
     ref_data_address = ''
     read_data_address = ''
-
-    unittest.main()
+    reads_count_pipeline(ref_data_address, reads_data_address)
+    # unittest.main()
