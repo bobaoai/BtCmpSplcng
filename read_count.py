@@ -38,11 +38,21 @@ def reads_count_pipeline(ref_data_address, reads_data_address, gene_fasta_file):
 
     [gene_dic[x].count_reads() for x in gene_dic.keys()]
     print "Finished count reads"
+
     for i in gene_dic.keys():
         gene_dic[i].output_overlap_info()
         # then for some output
-    for i in alst:
-        print gene_dic[i].counts_box_lst
+    with open(r'/Users/apple/Desktop/BootCampsplicing/counts_output.txt', "w") as text_file:
+        for i in gene_dic.keys():
+
+            a_gene = gene_dic[i]
+            if a_gene.average_count >= 25: continue
+            output_box = ",".join([str(i) for i in a_gene.counts_box_lst])
+            output_name = a_gene.name
+            output_length = str(a_gene.length)
+            output_line = "\t".join([output_name, output_length, output_box])
+            text_file.write(output_line + "\n")
+    text_file.close()
 
 
 def get_gene_length(len_lst):
@@ -106,6 +116,7 @@ class gene:
         self.exon_lst = []
         self.reads_lst = []
         self.counts_box_lst = []
+        self.average_count = 0
 
     def set_hit_map(self):
         if self.length != -1:
@@ -133,14 +144,18 @@ class gene:
                 if i >= len(self.hit_map):
                     print temp_read[1], i, len(self.hit_map), self.name, self.length
                 self.hit_map[i] += 1
+                # head(self.hit_map)
 
     def output_overlap_info(self):
         box_num = self.length / 10
         if self.length % 10 != 0:
             box_num += 1
-        counts_box_lst = [0] * box_num
+        self.counts_box_lst = [0] * box_num
         for i in xrange(box_num):
-            counts_box_lst[i] = sum(self.hit_map[i:i + 10]) / 10
+            self.counts_box_lst[i] = sum(self.hit_map[i:i + 10]) / 10
+        # head(self.counts_box_lst)
+        self.average_count = sum(self.counts_box_lst) / len(self.counts_box_lst)
+        # exit()
 
 
 if __name__ == '__main__':
